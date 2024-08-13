@@ -2,12 +2,13 @@ import * as React from "react";
 import Map, { Marker } from "react-map-gl";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { ILocation } from "../App";
 import { useEffect, useRef } from "react";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiZHplbWVudSIsImEiOiJjbHpxcTN1djIwdmk2Mm1zM2NrMjM2ZndvIn0.Dh_ROZn9FqCo-9AiJAt8ew"; // Set your mapbox token here
-
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN; // Set your mapbox token here
+export interface ILocation {
+  lat: number;
+  lng: number;
+}
 const MapProvider: React.FC<{ to_location: ILocation }> = ({ to_location }) => {
   const mapRef = useRef<MapRef | null>(null);
 
