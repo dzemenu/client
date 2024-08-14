@@ -6,7 +6,8 @@ import WebAdmin from "./pages/WebAdmin";
 function App() {
   return (
     <div>
-      <h1>GOZEM</h1>
+      <button className="button" onClick={() => window.location.href = "/web-tracker"}>Web Tracker</button>
+      <button className="button" onClick={() => window.location.href = "/web-admin"}>Web Admin</button>
       <Routes>
         <Route path="/web-tracker" element={<WebTracker />} />
         <Route path="/web-admin" element={<WebAdmin />} />
