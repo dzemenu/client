@@ -25,8 +25,16 @@ function DriverAdmin() {
   };
   useEffect(() => {}, [details]);
   const handleDeliveryUpdate = (status: string) => {
+    let time = {};
+    if (status == "picked-up")
+      time = { status: status, pickup_time: new Date().toISOString() };
+    if (status == "in-transit")
+      time = { status: status, start_time: new Date().toISOString() };
+    if (status == "delivered")
+      time = { status: status, end_time: new Date().toISOString() };
+
     axios.put(`http://localhost:5000/api/delivery/${id}`, {
-      status: status,
+      ...time,
     });
   };
   return (

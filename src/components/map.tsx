@@ -1,23 +1,27 @@
 import * as React from "react";
 import Map, { MapRef, Marker } from "react-map-gl";
-
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef } from "react";
 import { ILocation } from "../type";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-const MapProvider: React.FC<{ to_location: ILocation }> = ({ to_location }) => {
+
+const MapProvider: React.FC<{
+  to_location: ILocation;
+  from_location: ILocation;
+  current_location: ILocation;
+}> = ({ to_location, from_location, current_location }) => {
   const mapRef = useRef<MapRef | null>(null);
 
   useEffect(() => {
-    if (mapRef.current && to_location) {
+    if (mapRef.current && current_location) {
       mapRef.current.flyTo({
-        center: [to_location.lng, to_location.lat],
+        center: [current_location.lng, current_location.lat],
         zoom: 14,
         essential: true,
       });
     }
-  }, [to_location]);
+  }, [current_location]);
 
   return (
     <Map
@@ -31,12 +35,32 @@ const MapProvider: React.FC<{ to_location: ILocation }> = ({ to_location }) => {
       mapboxAccessToken={MAPBOX_TOKEN}
       ref={mapRef}
     >
-      <Marker
-        longitude={to_location?.lng || -122.4}
-        latitude={to_location?.lat || 37.8}
-        color="red"
-        style={{ cursor: "pointer" }}
-      />
+      {from_location && (
+        <Marker
+          longitude={from_location.lng}
+          latitude={from_location.lat}
+          color="blue"
+          style={{ cursor: "pointer" }}
+        />
+      )}
+
+      {to_location && (
+        <Marker
+          longitude={to_location.lng}
+          latitude={to_location.lat}
+          color="green"
+          style={{ cursor: "pointer" }}
+        />
+      )}
+
+      {current_location && (
+        <Marker
+          longitude={current_location.lng}
+          latitude={current_location.lat}
+          color="red"
+          style={{ cursor: "pointer" }}
+        />
+      )}
     </Map>
   );
 };
