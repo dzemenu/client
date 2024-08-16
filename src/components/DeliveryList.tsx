@@ -7,7 +7,6 @@ const DeliveryList: React.FC<DeliveryListProps> = ({ deliveries }) => {
   if (!deliveries || deliveries.length === 0) {
     return <p>No deliveries available.</p>;
   }
-
   return (
     <ul
       style={{
@@ -34,7 +33,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({ deliveries }) => {
           <strong>Status:</strong> {delivery.status}
           <br />
           <strong>Location:</strong>{" "}
-          {`Lat: ${delivery.location.lat}, Lng: ${delivery.location.lng}`}
+          {`Lat: ${delivery.location?.lat}, Lng: ${delivery.location?.lng}`}
         </li>
       ))}
     </ul>

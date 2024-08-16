@@ -1,48 +1,72 @@
 import { useEffect, useState } from "react";
-
 import "../App.css";
 import MapProvider from "../components/map";
 import axios from "axios";
-import { IPackage } from "../type";
+import { IPackage, Delivery } from "../type";
 
 function DriverAdmin() {
   const [id, setId] = useState("");
-  const [details, setDetails] = useState<IPackage>();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const [deliveryDetails, setDeliveryDetails] = useState<Delivery | null>(null);
+  const [packageDetails, setPackageDetails] = useState<IPackage | null>(null);
+  console.log("first", packageDetails);
+  const fetchDeliveryDetails = (deliveryId: string) => {
     axios
-      .get(`http://localhost:5000/api/delivery/${id}`)
+      .get(`http://localhost:5000/api/delivery/${deliveryId}`)
       .then((res) => {
         if (res.data) {
-          setDetails(res.data);
+          setDeliveryDetails(res.data);
+          fetchPackageDetails(res.data.package_id); // Fetch package details using the package_id from the delivery
         } else {
-          setDetails([]);
-          alert("Not valid ID");
+          setDeliveryDetails(null);
+          setPackageDetails(null);
+          alert("Not a valid ID");
         }
       })
       .catch((err) => console.log(err));
   };
-  useEffect(() => {}, [details]);
+
+  const fetchPackageDetails = (packageId: string) => {
+    axios
+      .get(`http://localhost:5000/api/package/${packageId}`)
+      .then((res) => {
+        if (res.data) {
+          setPackageDetails(res.data.package);
+        } else {
+          setPackageDetails(null);
+          alert("Package not found");
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (id) {
+      fetchDeliveryDetails(id);
+    }
+  };
+
   const handleDeliveryUpdate = (status: string) => {
     let time = {};
-    if (status == "picked-up")
+    if (status === "picked-up")
       time = { status: status, pickup_time: new Date().toISOString() };
-    if (status == "in-transit")
+    if (status === "in-transit")
       time = { status: status, start_time: new Date().toISOString() };
-    if (status == "delivered")
+    if (status === "delivered")
       time = { status: status, end_time: new Date().toISOString() };
 
-    axios.put(`http://localhost:5000/api/delivery/${id}`, {
-      ...time,
-    });
+    axios
+      .put(`http://localhost:5000/api/delivery/${id}`, time)
+      .then(() => fetchDeliveryDetails(id)) // Refresh the details after update
+      .catch((err) => console.log(err));
   };
+
   return (
     <div className="main">
       <div className="header">
         <input
           className="input"
-          placeholder="Enter Deivery ID"
+          placeholder="Enter Delivery ID"
           onChange={(e) => setId(e.target.value)}
         />
         <button
@@ -55,45 +79,76 @@ function DriverAdmin() {
       </div>
       <div className="section">
         <div className="details">
-          {details && (
+          {packageDetails && deliveryDetails && (
             <ul>
               <h1>Package Details</h1>
               <li>
                 <p>
-                  <b>Package ID:</b> {details.package_id}
+                  <b>Package ID:</b> {packageDetails.package_id}
                 </p>
               </li>
               <li>
                 <p>
-                  <b>description:</b> {details.description}
+                  <b>Description:</b> {packageDetails.description}
                 </p>
               </li>
               <li>
                 <p>
-                  <b>Weight:</b> {details.weight}grams
+                  <b>Weight:</b> {packageDetails.weight} grams
                 </p>
               </li>
               <li>
                 <p>
-                  <b>Width:</b> {details.width}cm
+                  <b>Width:</b> {packageDetails.width} cm
                 </p>
               </li>
               <li>
                 <p>
-                  <b>Height:</b> {details.height}cm
+                  <b>Height:</b> {packageDetails.height} cm
                 </p>
               </li>
               <li>
                 <p>
-                  <b>Depth:</b> {details.depth}cm
+                  <b>Depth:</b> {packageDetails.depth} cm
                 </p>
               </li>
               <h1>Delivery Details</h1>
+              <li>
+                <p>
+                  <b>Delivery ID:</b> {deliveryDetails._id}
+                </p>
+              </li>
+              <li>
+                <p>
+                  <b>Pickup Time:</b> {deliveryDetails.pickup_time}
+                </p>
+              </li>
+              <li>
+                <p>
+                  <b>Start Time:</b> {deliveryDetails.start_time}
+                </p>
+              </li>
+              <li>
+                <p>
+                  <b>End Time:</b> {deliveryDetails.end_time}
+                </p>
+              </li>
+              <li>
+                <p>
+                  <b>Status:</b> {deliveryDetails.status}
+                </p>
+              </li>
             </ul>
           )}
         </div>
         <div className="map">
-          {details && <MapProvider to_location={details?.to_location} />}
+          {packageDetails && deliveryDetails && (
+            <MapProvider
+              from_location={packageDetails.from_location}
+              to_location={packageDetails.to_location}
+              current_location={deliveryDetails.location}
+            />
+          )}
         </div>
         <div className="buttonGroup">
           <button
@@ -115,7 +170,7 @@ function DriverAdmin() {
             onClick={() => handleDeliveryUpdate("delivered")}
             style={{ backgroundColor: "#27b227" }}
           >
-            Deliveried
+            Delivered
           </button>
           <button
             className="button"
