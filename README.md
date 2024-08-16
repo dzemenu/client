@@ -2,6 +2,9 @@
 
 ![image](https://github.com/user-attachments/assets/3ca6af55-a398-4d71-b334-e7607bbaa87b)
 ![image](https://github.com/user-attachments/assets/d1681032-8778-488e-a54b-26c9931d6476)
+![image](https://github.com/user-attachments/assets/97c1856f-9871-4cd5-966a-374ada733ef7)
+![image](https://github.com/user-attachments/assets/c98f1c02-3c08-4318-8142-88bedfb82b2d)
+
 
 
 # Web Tracker
