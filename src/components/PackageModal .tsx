@@ -73,7 +73,7 @@ const PackageModal: React.FC<PackageModalProps> = ({
           />
         </label>
         <label>
-          Weight (kg):
+          Weight (gram):
           <input
             type="number"
             name="weight"
